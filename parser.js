@@ -1,4 +1,4 @@
-let tableACAO = {
+const actionTable = {
     '0': {
         'id': 's5',
         '+': null,
@@ -97,7 +97,7 @@ let tableACAO = {
     },
 }
 
-let tableTRANSICAO = {
+const transitionTable = {
     '0': {
         'E': '1',
         'T': '2',
@@ -174,8 +174,8 @@ const reduce = (number) => {
     //reduz usando a produção de número j
 }
 
-// regra a (alfa) -> b (beta)
-const producoes = {
+// regra de produção a (alfa) -> b (beta)
+const grammarProductions = {
     '1': {
         // E->E+T
         'a': 'E',
@@ -214,48 +214,48 @@ const producoes = {
     },
 };
 
-let entrada = ['id','*','id','+','id','$'];
-let pilha = [];
+let input = ['id','*','id','+','id','$'];
+let stack = [];
 let index = 0;
 
 //Condição inicial
-pilha.push('0');
-let a = entrada[index];
+stack.push('0');
+let a = input[index];
 
 while (true) {
-    s = peek(pilha);
+    s = peek(stack);
 
     console.log("---------------------");
-    console.log("Ação -> "+ tableACAO[s][a]);
-    console.log("Pilha -> " + pilha);
+    console.log("Ação -> "+ actionTable[s][a]);
+    console.log("Pilha -> " + stack);
 
-    if (tableACAO[s][a] == null) {
-        console.log("Não existe a ação ou transição na tabela.");
+    if (actionTable[s][a] == null) {
+        console.log("Não existe ação ou transição na tabela.");
         break;
     }
 
-    let acao = tableACAO[s][a].slice(0,1);
-    let number = tableACAO[s][a].slice(1);
+    let action = actionTable[s][a].slice(0,1);
+    let number = actionTable[s][a].slice(1);
 
-    if (acao == 's') {
-        pilha.push(number);
+    if (action == 's') {
+        stack.push(number);
         index++;
-        a = entrada[index];
-    } else if (acao == 'r') {
-        console.table(producoes[number]);
+        a = input[index];
+    } else if (action == 'r') {
+        console.table(grammarProductions[number]);
 
         // desempilha |β| itens;
-        for (let i = 0; i < producoes[number]['length']; i++) {
-            pilha.pop();
+        for (let i = 0; i < grammarProductions[number]['length']; i++) {
+            stack.pop();
         }
 
-        t = peek(pilha);
-        alfa = producoes[number]['a'];
+        t = peek(stack);
+        alpha = grammarProductions[number]['a'];
 
-        pilha.push(tableTRANSICAO[t][alfa]);
-        console.log(pilha);
+        stack.push(transitionTable[t][alpha]);
+        console.log(stack);
 
-    } else if (tableACAO[s][a] == 'OK') {
+    } else if (actionTable[s][a] == 'OK') {
         console.log("Análise concluída");
         break;
     } else {
@@ -264,5 +264,5 @@ while (true) {
     }
 }
 
-// console.table(tableACAO);
-// console.table(tableTRANSICAO);
+// console.table(actionTable);
+// console.table(transitionTable);
