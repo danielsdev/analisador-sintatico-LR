@@ -100,8 +100,8 @@ let tableACAO = {
 let tableTRANSICAO = {
     '0': {
         'E': '1',
-        'T': '1',
-        'F': '1',
+        'T': '2',
+        'F': '3',
     },
     '1': {
         'E': null,
@@ -160,6 +160,10 @@ let tableTRANSICAO = {
     },
 }
 
+const peek = (stack) => {
+    return stack[stack.length - 1] ?? null; 
+}
+
 const shift = (number) => {
     console.log("Execução da função shift em: "+ number)
     // avança na entrada e empilha o estado i na pilha
@@ -170,53 +174,95 @@ const reduce = (number) => {
     //reduz usando a produção de número j
 }
 
-let producao = {
-    '1': ''
-}
+// regra a (alfa) -> b (beta)
+const producoes = {
+    '1': {
+        // E->E+T
+        'a': 'E',
+        'b': 'E+T',
+        'length': 3
+    },
+    '2': {
+        // E->T
+        'a': 'E',
+        'b': 'T',
+        'length': 1
+    } ,
+    '3': {
+        // T->T*F
+        'a': 'T',
+        'b': 'T*F',
+        'length': 3
+    },
+    '4': {
+        // T->F
+        'a': 'T',
+        'b': 'F',
+        'length': 1
+    },
+    '5': {
+        // F->(E)
+        'a': 'F',
+        'b': '(E)',
+        'length': 3
+    },
+    '6': {
+        // F->id
+        'a': 'F',
+        'b': 'id',
+        'length': 1
+    },
+};
 
-/**
- * GRAMATICA
- * 
- * 1. E -> E + T
- * 2. E -> T
- * 3. T -> T * F
- * 4. T -> F
- * 5. F -> (E)
- * 6. F -> id
- * 
- */
-
-//let entrada = 'w$';
 let entrada = ['id','*','id','+','id','$'];
 let pilha = [];
 let index = 0;
+
+//Condição inicial
+pilha.push('0');
 let a = entrada[index];
 
-pilha.push('0');
-
 while (true) {
-    s = pilha.pop();
+    s = peek(pilha);
 
-    console.log(s, a);
-    console.log(tableACAO[s][a])
-    
+    console.log("---------------------");
+    console.log("Ação -> "+ tableACAO[s][a]);
+    console.log("Pilha -> " + pilha);
+
+    if (tableACAO[s][a] == null) {
+        console.log("Não existe a ação ou transição na tabela.");
+        break;
+    }
+
     let acao = tableACAO[s][a].slice(0,1);
     let number = tableACAO[s][a].slice(1);
 
-    console.log(acao, number);
+    if (acao == 's') {
+        pilha.push(number);
+        index++;
+        a = entrada[index];
+    } else if (acao == 'r') {
+        console.table(producoes[number]);
 
-    if (acao == "s") {
-        t = '';
-        pilha.push(number)
-    } else if (tableACAO[s][a] === "r t") {
-        console.log('Chegou no reduce em:' +acao);
+        // desempilha |β| itens;
+        for (let i = 0; i < producoes[number]['length']; i++) {
+            pilha.pop();
+        }
+
+        t = peek(pilha);
+        alfa = producoes[number]['a'];
+
+        pilha.push(tableTRANSICAO[t][alfa]);
         console.log(pilha);
-        break;
 
     } else if (tableACAO[s][a] == 'OK') {
+        console.log("Análise concluída");
+        break;
+    } else {
+        console.log("Erro sintático");
         break;
     }
 }
 
-console.table(tableACAO);
-console.table(tableTRANSICAO);
+// console.table(tableACAO);
+// console.table(tableTRANSICAO);
