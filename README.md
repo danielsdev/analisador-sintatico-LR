@@ -18,3 +18,21 @@
     5. F -> (E)
     6. F -> id
 
+## Algoritmo de análise LR
+
+```
+a := primeiro símbolo de w$;
+while(1) { /* repita indefinidamente */
+    s := estado no topo da pilha;
+    if(ACAO[s,a] = "shift t") {
+        empilha t;
+        a := próximo símbolo da entrada;
+    } else if (ACAO[s,a] = "reduce A --> β") {
+        desempilha |β| itens;
+        t := topo da pilha;
+        empilha TRANSICAO[t,A];
+        imprima "A --> β"
+    } else if (ACAO[s,a] = "OK") pare; /* fim */
+    else erro;
+}
+```
